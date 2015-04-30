@@ -3,8 +3,6 @@ package com.xsogen.element;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,11 +11,14 @@ import android.widget.TextView;
 public class ElementActivity extends ActionBarActivity {
     Button btnShowLocation;
     com.xsogen.element.GPSTracker gps;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_element);
+
+        dbHelper = DatabaseHelper.getInstance(this);
 
         btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
         final TextView geoLog = (TextView) findViewById(R.id.geoLog);
@@ -36,7 +37,9 @@ public class ElementActivity extends ActionBarActivity {
                     double latitude = gps.getLatitude();
                     double longitude = gps.getLongitude();
 
-                    // \n is for new line
+                    // TODO: is this right? why am I using 1 for id and its working?
+                    LocationRecord loc_rec = new LocationRecord(1, latitude, longitude);
+                    dbHelper.getLocationDatabase().addLocation(loc_rec);
                     geoLog.append("Lat: " + latitude + ", Long: " + longitude + "\n");
                 }else{
                     // can't get location

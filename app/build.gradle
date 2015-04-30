@@ -4,6 +4,15 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
 
+    signingConfigs {
+        release {
+            storeFile file('android.keystore')
+            storePassword "pwd"
+            keyAlias "alias"
+            keyPassword "pwd"
+        }
+    }
+
     defaultConfig {
         applicationId "com.xsogen.element"
         minSdkVersion 8
@@ -15,11 +24,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
 
+tasks.withType(com.android.build.gradle.tasks.PackageApplication) { pkgTask ->
+    pkgTask.jniFolders = new HashSet<File>()
+    pkgTask.jniFolders.add(new File(projectDir, 'extlibs'))
+}
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.0'
 }
