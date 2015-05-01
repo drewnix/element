@@ -23,7 +23,7 @@ public class DatabaseHelper {
   public synchronized static DatabaseHelper getInstance(Context context) {
     if(instance == null) {
       Log.d(TAG, "instance == null, opening instance dir=" + context.getFilesDir());
-      instance = new DatabaseHelper(new File(context.getFilesDir(), "DrewDatabase.sqlite"), context);
+      instance = new DatabaseHelper(new File(context.getFilesDir(), "element.sqlite"), context);
     }
     return instance;
   }
@@ -83,6 +83,8 @@ public class DatabaseHelper {
     for(Map.Entry<String, Object> entry : values.valueSet()) {
       if(entry.getValue().toString().startsWith("ST_"))
         out.put(entry.getKey(), entry.getValue().toString());
+      else if (entry.getValue().toString().startsWith("datetime"))
+        out.put(entry.getKey(), entry.getValue().toString());
       else
         out.put(entry.getKey(), "'" + entry.getValue() + "'");
     }
@@ -118,7 +120,9 @@ public class DatabaseHelper {
       i++;
     }
 
-    // Log.w(TAG, sql);
+    sql += ";";
+
+    Log.w(TAG, sql);
     exec(sql);
   }
 

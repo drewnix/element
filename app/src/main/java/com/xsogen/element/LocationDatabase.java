@@ -9,7 +9,7 @@ public class LocationDatabase {
 
   private static final String TAG = "LocationDatabase";
 
-  private static final String SELECTION_POINT      = "SELECT id, longitude, latitude " +
+  private static final String SELECTION_POINT      = "SELECT id, geometry " +
                                                      "FROM location ";
 
   private DatabaseHelper dbHelper;
@@ -27,12 +27,19 @@ public class LocationDatabase {
 
     dbHelper.exec("SELECT InitSpatialMetaData();");
     dbHelper.exec("DROP TABLE IF EXISTS location;");
-
+    /*
     dbHelper.exec("CREATE TABLE location (" +
                   "id INTEGER NOT NULL PRIMARY KEY, " +
                   "latitude REAL NOT NULL, " +
                   "longitude REAL NOT NULL " +
                   ");");
+
+    */
+
+    dbHelper.exec("CREATE TABLE location (id INTEGER NOT NULL PRIMARY KEY, timestamp DATETIME NOT NULL);");
+    dbHelper.exec("SELECT AddGeometryColumn('location', 'geometry', 4326, 'POINT', 'XY');");
+
+
   }
 
   private boolean isInitialized() {
@@ -51,8 +58,11 @@ public class LocationDatabase {
 
   public LocationRecord addLocation(LocationRecord point) {
     ContentValues values = new ContentValues();
-    values.put("latitude", point.getY());
-    values.put("longitude", point.getX());
+    //values.put("latitude", point.getY());
+    //values.put("longitude", point.getX());
+    values.put("geometry", "ST_GeomFromText('POINT(" + point.getY() + " " + point.getY() + ")', 4326)");
+    values.put("timestamp", "datetime('now')");
+
     dbHelper.insert("location", values);
 
     LocationRecord retPoint = null;
